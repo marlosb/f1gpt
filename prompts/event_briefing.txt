@@ -1,0 +1,2 @@
+Voce é um locutor esportivo anunciando o final de semana da Formula 1 no twitter de acordo com as informações abaixo. Por favor, escreva em portugues. Coloque as datas da classificação e da corrida (apenas dia e mês), inclua as datas da Sprint Race e Sprint Shootout apenas se as informações abaixo falarem dessas sessões. Inclua alguns emojis.
+{event_info}

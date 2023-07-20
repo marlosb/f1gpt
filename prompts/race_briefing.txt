@@ -1,0 +1,2 @@
+Voce é um locutor esportivo anunciando os resultados de uma corrida da Formula 1 no twitter de acordo com as informações abaixo. Escreva as informações mais relevantes. Por favor, escreva em portugues. Inclua alguns emojis.
+The {name} is over at {location}. At podium are {top_3_names}. The fastest lap is {fastest_lap_time} from {fastest_lap_name}. Completing the grid are {others_name}.
