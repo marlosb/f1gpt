@@ -3,49 +3,41 @@ import datetime
 import pandas
 import fastf1
 
-# defined drivers info: name abbreviation, full name and color
-drivers_abv = { '1' : 'VER', '2' : 'SAR',
-                '3' : 'RIC',
-                '4' : 'NOR', '10' : 'GAS',
-               '11' : 'PER', '14' : 'ALO',
-               '16' : 'LEC', '18' : 'STR',
-               '20' : 'MAG', '21' : 'DEV',
-               '22' : 'TSU', '23' : 'ALB', 
-               '24' : 'ZHO', '27' : 'HUL',
-               '31' : 'OCO', 
-               '34' : 'DRU', '44' : 'HAM', 
-               '55' : 'SAI', '63' : 'RUS', 
-               '77' : 'BOT', '81' : 'PIA'}
+class DriversAttribute:
+    def __init__(self, data: dict[str]) -> None:
+        self.items = data
 
-drivers_names =   { '1' : 'Max Versttapen', '2' : 'Logan Sargeant',
-                    '3' : 'Daniel Ricciardo',
-                    '4' : 'Lando Norris', '10' : 'Pierre Gasly',
-                   '11' : 'Sergio Peres', '14' : 'Fernando Alonso',
-                   '16' : 'Charles Lecler', '18' : 'Lance Stroll',
-                   '20' : 'Kevin Magnussen', '21' : 'Nyck De Vries',
-                   '22' : 'Yuki Tsunoda', '23' : 'Alex Albon', 
-                   '24' : 'Guanyu Zhou', '27' : 'Nico Hulkenberg',
-                   '31' : 'Esteban Ocon', 
-                   '34' : 'Felipe Drugovich', '44' : 'Lewis Hamilton', 
-                   '55' : 'Carlos Sainz', '63' : 'George Russell', 
-                   '77' : 'Valteri Bottas', '81' : 'Oscar Piastri'}
+    def __getitem__(self, key: str) -> str:
+        if isinstance(key, str):
+            for item in self.items:
+                if item['number'] == key:
+                    return item
+        else:
+            raise TypeError('Key must be a string')
 
-drivers_colors =   { '1' : '#0700EE', '2' : '#37BEDD',
-                     '3' : '#2C4563',
-                     '4' : '#FF8700', '10' : '#0090FF',
-                    '11' : '#3671C6', '14' : '#006E61',
-                    '16' : '#DC0000', '18' : '#358C75',
-                    '20' : '#B6BABD', '21' : '#2C4563',
-                    '22' : '#2C4563', '23' : '#015AFF', 
-                    '24' : '#C92D4B', '27' : '#FFFFFF',
-                    '31' : '#2293D1', 
-                    '34' : '#006E61', '44' : '#01D2BD', 
-                    '55' : '#F91536', '63' : '#6CD3BF', 
-                    '77' : '#900000', '81' : '#F58020'}
-
-drivers = {'abv': drivers_abv,
-           'names': drivers_names,
-           'colors': drivers_colors}
+drivers = DriversAttribute([
+                            {'number': '1', 'name': 'Max Versttapen', 'color': '#0700EE', 'abv': 'VER'},
+                            {'number': '2', 'name': 'Logan Sargeant', 'color': '#37BEDD', 'abv': 'SAR'},
+                            {'number': '3', 'name': 'Daniel Ricciardo', 'color': '#2C4563', 'abv': 'RIC'},
+                            {'number': '4', 'name': 'Lando Norris', 'color': '#FF8700', 'abv': 'NOR'},
+                            {'number': '10', 'name': 'Pierre Gasly', 'color': '#0090FF', 'abv': 'GAS'},
+                            {'number': '11', 'name': 'Sergio Peres', 'color': '#3671C6', 'abv': 'PER'},
+                            {'number': '14', 'name': 'Fernando Alonso', 'color': '#006E61', 'abv': 'ALO'},
+                            {'number': '16', 'name': 'Charles Lecler', 'color': '#DC0000', 'abv': 'LEC'},
+                            {'number': '18', 'name': 'Lance Stroll', 'color': '#358C75', 'abv': 'STR'},
+                            {'number': '20', 'name': 'Kevin Magnussen', 'color': '#B6BABD', 'abv': 'MAG'},
+                            {'number': '21', 'name': 'Nyck De Vries', 'color': '#2C4563', 'abv': 'DEV'},
+                            {'number': '22', 'name': 'Yuki Tsunoda', 'color': '#2C4563', 'abv': 'TSU'},
+                            {'number': '23', 'name': 'Alex Albon', 'color': '#015AFF', 'abv': 'ALB'},
+                            {'number': '24', 'name': 'Guanyu Zhou', 'color': '#C92D4B', 'abv': 'ZHO'},
+                            {'number': '27', 'name': 'Nico Hulkenberg', 'color': '#FFFFFF', 'abv': 'HUL'},
+                            {'number': '31', 'name': 'Esteban Ocon', 'color': '#2293D1', 'abv': 'OCO'},
+                            {'number': '34', 'name': 'Felipe Drugovich', 'color': '#006E61', 'abv': 'DRU'},
+                            {'number': '44', 'name': 'Lewis Hamilton', 'color': '#01D2BD', 'abv': 'HAM'},
+                            {'number': '55', 'name': 'Carlos Sainz', 'color': '#F91536', 'abv': 'SAI'},
+                            {'number': '63', 'name': 'George Russell', 'color': '#6CD3BF', 'abv': 'RUS'},
+                            {'number': '77', 'name': 'Valteri Bottas', 'color': '#900000', 'abv': 'BOT'},
+                            {'number': '81', 'name': 'Oscar Piastri', 'color': '#F58020', 'abv': 'PIA'}])
 
 class F1Event:
     def __init__(self, event_name: str, year: int = 2023):
@@ -58,7 +50,7 @@ class F1Session(F1Event):
     def __init__(self, 
                  event_name: str, 
                  session_number: int, 
-                 drivers: dict[dict[str]],
+                 drivers: DriversAttribute,
                  year: int = 2023):
         F1Event.__init__(self, event_name, year)
         self.session_number = session_number
@@ -73,7 +65,7 @@ class F1Session(F1Event):
                 lap = self.session.laps.pick_driver(driver).pick_fastest()
                 laptime = (datetime.datetime(1970,1,1) + lap.LapTime).strftime("%M:%S.%f")
                 self.fastest_lap.loc[driver,'Fastest Lap'] = laptime
-                self.fastest_lap.loc[driver,'Driver'] = self.drivers['abv'][driver]
+                self.fastest_lap.loc[driver,'Driver'] = self.drivers[driver]['abv']
             except:
                 self.fastest_lap.loc[driver,'Fastest Lap'] = None
 
