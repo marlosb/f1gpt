@@ -59,7 +59,7 @@ class Ploter:
             ax[0].yaxis.label.set_color('white')
             ax[0].legend(fontsize=font_size)
             ax[0].set_title(f'{self.name} fastest lap comparison by {axis_x}', color='white', fontsize=20)
-            ax[0].tick_params(axis='y', labelsize = font_size)
+            ax[0].tick_params(axis='both', labelsize = font_size, labelcolor='white')
             ax[0].set_facecolor('black')
             ax[0].grid(True, color='white')
             
@@ -76,7 +76,7 @@ class Ploter:
                                     label=self.drivers[car]['abv'],
                                     color=self.drivers[car]['color'])
                 ax[feature_index].set_ylabel(feature, fontsize=font_size, )
-                ax[feature_index].tick_params(axis='y', labelsize = font_size)
+                ax[feature_index].tick_params(axis='both', labelsize = font_size,  labelcolor='white')
                 ax[feature_index].set_facecolor('black')
                 if feature_index == 1:
                     ax[feature_index].legend(fontsize=font_size)
@@ -86,5 +86,6 @@ class Ploter:
                 ax[feature_index].grid(True, color='white')
                 ax[feature_index].xaxis.label.set_color('white')
                 ax[feature_index].yaxis.label.set_color('white')
-                                
+
+
         if save_png: fig.savefig('chart.png', bbox_inches='tight', facecolor='black')

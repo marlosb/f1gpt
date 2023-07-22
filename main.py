@@ -16,7 +16,7 @@ if __name__ == "__main__":
         response = model.predict_messages(event_prompt.format_messages(event_info = next_event.event))
         print(response.content)
     elif 'session' in sys.argv:
-        session = F1Session('Silverstone', 4, drivers)
+        session = F1Session('Hungary', 2, drivers)
         briefer = SessionBriefer(session)
         kwargs = briefer.create_session_brief()
         response = model.predict_messages(session_prompt.format_messages(**kwargs))
@@ -36,4 +36,6 @@ if __name__ == "__main__":
         response = model.predict_messages(range_prompt.format_messages(range_info = template))
         print(response.content)
         ploter = Ploter(session)
-        ploter.plot_comparison(chart_range=[5300,5530])  
+        ploter.plot_comparison(chart_range=[5300,5530],
+                               features= ['Time_Gap', 'Speed', 'Brake', 'Throttle'])  
+                               
