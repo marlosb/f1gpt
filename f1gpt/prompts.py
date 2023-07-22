@@ -18,6 +18,12 @@ templates_list = ['event_briefing.txt', 'race_briefing.txt',
 templates_path = 'prompts/'
 
 def create_prompt(file_name: str) -> ChatPromptTemplate:
+    '''Creates a ChatPromptTemplate from a file
+    Args:
+        file_name: (str) name of the file to read
+    Returns:
+        ChatPromptTemplate object
+        '''
     with open(file_name) as f:
         template = f.read()
 

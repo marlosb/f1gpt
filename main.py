@@ -32,7 +32,7 @@ if __name__ == "__main__":
     elif 'range' in sys.argv:
         session = F1Session('Silverstone', 4, drivers)
         briefer = SessionBriefer(session)
-        template = briefer.range_briefing([5300,5530], turn_name = '15')
+        template = briefer.create_range_briefing([5300,5530], turn_name = '15')
         response = model.predict_messages(range_prompt.format_messages(range_info = template))
         print(response.content)
         ploter = Ploter(session)

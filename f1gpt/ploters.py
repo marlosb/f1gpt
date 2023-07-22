@@ -6,6 +6,12 @@ import pandas
 from f1gpt.connectors import F1Session
 
 class Ploter:
+    '''Class to plot a comparison between two drivers
+    Attributes:
+        session: F1Session object (see f1gpt.connectors)
+    Methods:
+        plot_comparison: plot a comparison between the two drivers
+        '''
     def __init__(self, 
                  session: F1Session) -> None:
         self.drivers = session.drivers
@@ -38,7 +44,15 @@ class Ploter:
                         features: list[str] = ['Time_Gap', 'Speed', 'Throttle', 'Brake', 'nGear'],
                         chart_range: list[int] = None,
                         save_png: bool = True) -> None :  
-    
+        '''Plot a comparison between the two drivers
+        args:
+            axis_x: (str) x axis of the chart - either "Distance" or "Time"
+            features: (list[str]) of features to be plotted - possible feature ["Time_Gap", "Speed", "Throttle", "Brake", "nGear"]
+            chart_range: (list[int]) [optional] range of the chart - e.g. [0, 100] for the first 100 meters
+            save_png: (bool) [optional] save the chart as a png file
+        Returns:
+            None'''
+        
         len_features = len(features)
         font_size = 14
         self.calculate_gap()
@@ -86,6 +100,5 @@ class Ploter:
                 ax[feature_index].grid(True, color='white')
                 ax[feature_index].xaxis.label.set_color('white')
                 ax[feature_index].yaxis.label.set_color('white')
-
 
         if save_png: fig.savefig('chart.png', bbox_inches='tight', facecolor='black')

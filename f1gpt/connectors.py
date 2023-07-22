@@ -4,7 +4,18 @@ import pandas
 import fastf1
 
 class DriversAttribute:
+    '''Class to store the drivers data
+    Attributes:
+        items: dictionary with the drivers data
+    Methods:
+        __getitem__: get the data of a driver by "number" key (str) or index
+        '''
     def __init__(self, data: dict[str]) -> None:
+        '''Creates a DriversAttribute object
+        Args:
+            data: (dict[str]) dictionary with the drivers data
+        Returns:
+            None'''
         self.items = data
 
     def __getitem__(self, key: str) -> str:
@@ -40,6 +51,11 @@ drivers = DriversAttribute([
                             {'number': '81', 'name': 'Oscar Piastri', 'color': '#F58020', 'abv': 'PIA'}])
 
 class F1Event:
+    '''Class to store the data of an event
+    Attributes:
+        event_name: name of the event (e.g. '"Silverstone"), we use fuzzy logic from fastf1 librarey to find the event
+        year: year of the event
+        '''
     def __init__(self, event_name: str, year: int = 2023):
         self.event_name = event_name
         self.year = year
@@ -47,11 +63,27 @@ class F1Event:
         self.event = self.schedule.get_event_by_name(self.event_name)
 
 class F1Session(F1Event):
+    '''Class to store the data of a session
+    Attributes:
+        event_name: name of the event (e.g. '"Silverstone")
+        year: year of the event
+        session_number: number of the session (e.g. 1 for FP1, 2 for FP2)
+        drivers: DriversAttribute object (see f1gpt.connectors)
+        '''
     def __init__(self, 
                  event_name: str, 
                  session_number: int, 
                  drivers: DriversAttribute,
                  year: int = 2023):
+        '''Creates a F1Session object
+        Args:
+            event_name: (str) name of the event (e.g. '"Silverstone"), we use fuzzy logic from fastf1 librarey to find the event
+            session_number: (int) number of the session (e.g. 1 for FP1, 2 for FP2, 3 for FP3, 4 for Q, 5 for R)
+            drivers: (DriversAttribute) object with the drivers data
+            year: (int) [optional] year of the event
+        Returns:
+            None
+        '''
         F1Event.__init__(self, event_name, year)
         self.session_number = session_number
         self.drivers = drivers
