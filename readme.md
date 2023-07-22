@@ -28,7 +28,7 @@ Where option can be:
 
  - prompts/: directory with prompts files (txt) used instruct the model and generate the text. If you want to create new skills, you must create a new prompt file in this directory.
  - f1gpt/__init__.py: blank init file to make the directory a python module.
- - f1gpt/briefiers.py: classes that consume data and generate the information to feed the prompts. If you want to create new skills, you must create a new class in this file.
+ - f1gpt/briefiers.py: classes that consume data and generate the information to feed the prompts, which I called briefing. If you want to create new skills, you must create a new class in this file.
  - f1gpt/call.py: class that calls the azure OpenAI API and generate the text.
  - f1gpt/connectors.py: classes that connect to the data sources and return the data. If you want to use a different data source, you must create a new class in this file.
  - f1gpt/plotter.py: class that generates the charts.
