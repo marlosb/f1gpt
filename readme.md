@@ -33,3 +33,7 @@ Where option can be:
  - f1gpt/connectors.py: classes that connect to the data sources and return the data. If you want to use a different data source, you must create a new class in this file.
  - f1gpt/plotter.py: class that generates the charts.
  - f1gpt/prompts.py: class that reads the prompt files and generate prompt objects from langchain framework.
+
+ ## See results
+
+ [https://twitter.com/F1gpt_analysis](https://twitter.com/F1gpt_analysis)
