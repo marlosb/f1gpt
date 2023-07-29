@@ -139,27 +139,33 @@ class SessionBriefer:
         briefing = ''
         if turn_name : briefing = briefing + f'At turn {turn_name}: '
         # calculate who arrives faster
-        p1_top_speed = p1_telemetry['Speed'].max()
-        p2_top_speed = p2_telemetry['Speed'].max()
-        if p1_top_speed > p2_top_speed:
-            briefing = briefing + f'{p1_name} arrives faster than {p2_name}. '
-        else:
-            briefing = briefing + f'{p1_name} arrives slower than {p2_name}. '
+        p1_avg_speed = p1_telemetry['Speed'].mean()
+        p2_avg_speed = p2_telemetry['Speed'].mean()
         # calculate who brakes firts
         p1_brake_distance = p1_telemetry[p1_telemetry['Brake'] == True]['Distance'].values[0]
         p2_brake_distance = p2_telemetry[p2_telemetry['Brake'] == True]['Distance'].values[0]
+        
+        p1_top_speed = p1_telemetry['Speed'].max()
+        p2_top_speed = p2_telemetry['Speed'].max()
         if p1_brake_distance < p2_brake_distance:
             briefing = briefing + f'{p1_name} brakes earlier than {p2_name}. '
         else:
             briefing = briefing + f'{p1_name} brakes later than {p2_name}. '
-        # calculate who resumes throttle earlier
-        p1_throttle_distance = p1_telemetry[(p1_telemetry['Distance'] > p1_brake_distance) & (p1_telemetry['Throttle'] > 0)]['Distance'].values[0]
-        p2_throttle_distance = p2_telemetry[(p2_telemetry['Distance'] > p1_brake_distance) & (p2_telemetry['Throttle'] > 0)]['Distance'].values[0]
-
-        if p1_throttle_distance < p2_throttle_distance:
-            briefing = briefing + f'{p1_name} resumes acceleration earlier {p2_name}. '
+        if p1_top_speed > p2_top_speed:
+            briefing = briefing + f'{p1_name} arrives faster than {p2_name}. '
         else:
-            briefing = briefing + f'{p1_name} resumes acceleration later than {p2_name}. '
+            briefing = briefing + f'{p1_name} arrives slower than {p2_name}. '
+        # calculate who resumes throttle earlier
+        p1_throttle_distance = p1_telemetry[(p1_telemetry['Distance'] > p1_brake_distance) & (p1_telemetry['Brake'] == False)]['Distance'].values[0]
+        p2_throttle_distance = p2_telemetry[(p2_telemetry['Distance'] > p2_brake_distance) & (p2_telemetry['Brake'] == False)]['Distance'].values[0]
+        
+        if p1_throttle_distance < p2_throttle_distance:
+            briefing = briefing + f'{p1_name} releases brake earlier than {p2_name}. '
+        else:
+            briefing = briefing + f'{p1_name} releases brake later than {p2_name}. '
+        # average speed
+        briefing = briefing + f'{p1_name} average speed is {round(p1_avg_speed, 2)} km/h '
+        briefing = briefing + f'while {p2_name} average speed is {round(p2_avg_speed, 2)} km/h. '
         # calculate how much P1 is faster at this part
         p1_time = (p1_telemetry['Time'].values[-1] - p1_telemetry['Time'].values[0]).astype(datetime.timedelta) / 1000000000
         p2_time = (p2_telemetry['Time'].values[-1] - p2_telemetry['Time'].values[0]).astype(datetime.timedelta) / 1000000000
