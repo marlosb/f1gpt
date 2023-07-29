@@ -85,10 +85,15 @@ class Ploter:
                 if chart_range:
                     telemetry = telemetry[telemetry[axis_x].between(chart_range[0],chart_range[1])]
                 car = self.cars[car_index]
+                # define chart line color    
+                if car_index == 1 and (self.drivers[self.cars[0]]['team'] == self.drivers[self.cars[1]]['team']):
+                    color = 'yellow'
+                else:
+                    color = self.drivers[car]['color']
                 ax[feature_index].plot(telemetry[axis_x], 
                                     telemetry[feature], 
                                     label=self.drivers[car]['abv'],
-                                    color=self.drivers[car]['color'])
+                                    color=color)
                 ax[feature_index].set_ylabel(feature, fontsize=font_size, )
                 ax[feature_index].tick_params(axis='both', labelsize = font_size,  labelcolor='white')
                 ax[feature_index].set_facecolor('black')
