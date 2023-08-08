@@ -1,5 +1,7 @@
 import datetime
 
+import pandas
+
 from f1gpt.connectors import F1Session
 
 class SessionBriefer:
@@ -135,41 +137,74 @@ class SessionBriefer:
         # get drivers names
         p1_name = self.drivers[self.cars[0]]["name"]
         p2_name = self.drivers[self.cars[1]]["name"]
-        # start briefing string
-        briefing = ''
-        if turn_name : briefing = briefing + f'At turn {turn_name}: '
-        # calculate who arrives faster
-        p1_avg_speed = p1_telemetry['Speed'].mean()
-        p2_avg_speed = p2_telemetry['Speed'].mean()
-        # calculate who brakes firts
-        p1_brake_distance = p1_telemetry[p1_telemetry['Brake'] == True]['Distance'].values[0]
-        p2_brake_distance = p2_telemetry[p2_telemetry['Brake'] == True]['Distance'].values[0]
-        
-        p1_top_speed = p1_telemetry['Speed'].max()
-        p2_top_speed = p2_telemetry['Speed'].max()
-        if p1_brake_distance < p2_brake_distance:
-            briefing = briefing + f'{p1_name} brakes earlier than {p2_name}. '
-        else:
-            briefing = briefing + f'{p1_name} brakes later than {p2_name}. '
-        if p1_top_speed > p2_top_speed:
-            briefing = briefing + f'{p1_name} arrives faster than {p2_name}. '
-        else:
-            briefing = briefing + f'{p1_name} arrives slower than {p2_name}. '
-        # calculate who resumes throttle earlier
-        p1_throttle_distance = p1_telemetry[(p1_telemetry['Distance'] > p1_brake_distance) & (p1_telemetry['Brake'] == False)]['Distance'].values[0]
-        p2_throttle_distance = p2_telemetry[(p2_telemetry['Distance'] > p2_brake_distance) & (p2_telemetry['Brake'] == False)]['Distance'].values[0]
-        
-        if p1_throttle_distance < p2_throttle_distance:
-            briefing = briefing + f'{p1_name} releases brake earlier than {p2_name}. '
-        else:
-            briefing = briefing + f'{p1_name} releases brake later than {p2_name}. '
-        # average speed
-        briefing = briefing + f'{p1_name} average speed is {round(p1_avg_speed, 2)} km/h '
-        briefing = briefing + f'while {p2_name} average speed is {round(p2_avg_speed, 2)} km/h. '
-        # calculate how much P1 is faster at this part
+        # create pandas DataFrame with range info
+        infos_df = pandas.DataFrame(columns=[p1_name, p2_name, 'difference','difference %'])
+        # start calculating infos
+        # calculate top speed
+        p1_top_speed = round(p1_telemetry['Speed'].max(), 2)
+        p2_top_speed = round(p2_telemetry['Speed'].max(), 2)
+        difference = abs(p1_top_speed - p2_top_speed)
+        difference_percent = round(difference / p1_top_speed * 100, 2)
+        infos_df.loc['top_speed km/h'] = [p1_top_speed, p2_top_speed, difference, difference_percent]
+        # calculate average speed
+        p1_avg_speed = round(p1_telemetry['Speed'].mean(), 2)
+        p2_avg_speed = round(p2_telemetry['Speed'].mean(), 2)
+        difference = abs(p1_avg_speed - p2_avg_speed)
+        difference_percent = round(difference / p1_avg_speed * 100, 2)
+        infos_df.loc['avg_speed km/h'] = [p1_avg_speed, p2_avg_speed, difference, difference_percent]
+        # calculate lowest speed
+        p1_lowest_speed = round(p1_telemetry['Speed'].min(), 2)
+        p2_lowest_speed = round(p2_telemetry['Speed'].min(), 2)
+        difference = abs(p1_lowest_speed - p2_lowest_speed)
+        difference_percent = round(difference / p1_lowest_speed * 100, 2)
+        infos_df.loc['lowest_speed km/h'] = [p1_lowest_speed, p2_lowest_speed, difference, difference_percent]
+        # calculate speed difference
+        p1_speed_difference = round(p1_top_speed - p1_lowest_speed, 2)
+        p2_speed_difference = round(p2_top_speed - p2_lowest_speed, 2)
+        difference = abs(p1_speed_difference - p2_speed_difference)
+        difference_percent = round(difference / p1_speed_difference * 100, 2)
+        infos_df.loc['speed_difference km/h'] = [p1_speed_difference, p2_speed_difference, difference, difference_percent]
+        # calculate time
         p1_time = (p1_telemetry['Time'].values[-1] - p1_telemetry['Time'].values[0]).astype(datetime.timedelta) / 1000000000
         p2_time = (p2_telemetry['Time'].values[-1] - p2_telemetry['Time'].values[0]).astype(datetime.timedelta) / 1000000000
-        briefing = briefing + f'{p1_name} runs this section in  {p1_time} s '
-        briefing = briefing + f'while {p2_name} runs it in  {p2_time} s. '
-        briefing = briefing + f'{p1_name} is {round(p2_time - p1_time, 3)} s faster.'
-        return briefing
+        difference = abs(p1_time - p2_time)
+        difference_percent = round(difference / p1_time * 100, 2)
+        infos_df.loc['time s'] = [p1_time, p2_time, difference, difference_percent]
+        # calculate brake start
+        p1_brake_start = p1_telemetry[p1_telemetry['Brake'] == True]['Distance'].values[0]
+        p2_brake_start = p2_telemetry[p2_telemetry['Brake'] == True]['Distance'].values[0]
+        difference = abs(p1_brake_start - p2_brake_start)
+        difference_percent = round(difference / p1_brake_start * 100, 2)
+        infos_df.loc['brake_start m'] = [p1_brake_start, p2_brake_start, difference, difference_percent]
+        # calculate brake release
+        p1_brake_release = p1_telemetry[(p1_telemetry['Distance'] > p1_brake_start) & (p1_telemetry['Brake'] == False)]['Distance'].values[0]
+        p2_brake_release = p2_telemetry[(p2_telemetry['Distance'] > p2_brake_start) & (p2_telemetry['Brake'] == False)]['Distance'].values[0]
+        difference = abs(p1_brake_release - p2_brake_release)
+        difference_percent = round(difference / p1_brake_release * 100, 2)
+        infos_df.loc['brake_release m'] = [p1_brake_release, p2_brake_release, difference, difference_percent]
+        # calculate brake distance
+        p1_brake_distance = p1_brake_release - p1_brake_start
+        p2_brake_distance = p2_brake_release - p2_brake_start
+        difference = abs(p1_brake_distance - p2_brake_distance)
+        difference_percent = round(difference / p1_brake_distance * 100, 2)
+        infos_df.loc['brake_distance m'] = [p1_brake_distance, p2_brake_distance, difference, difference_percent]
+        # identify brake-throttle overlap
+        p1_overlap = p1_telemetry[(p1_telemetry['Throttle'] > 20) & (p1_telemetry['Brake'] == True)]
+        p2_overlap = p2_telemetry[(p2_telemetry['Throttle'] > 20) & (p2_telemetry['Brake'] == True)]
+        if len(p1_overlap) > 0: 
+            p1_overlap_distance = p1_overlap['Distance'].values[-1] - p1_overlap['Distance'].values[0]
+        else: 
+            p1_overlap_distance = 0
+        if len(p2_overlap) > 0: 
+            p2_overlap_distance = p2_overlap['Distance'].values[-1] - p2_overlap['Distance'].values[0]
+        else:   
+            p2_overlap_distance = 0
+        difference = abs(p1_overlap_distance - p2_overlap_distance)
+        if p1_overlap_distance: 
+            difference_percent = round(difference / p1_overlap_distance * 100, 2)
+        else: 
+            difference_percent = 0
+        infos_df.loc['brake_throttle_overlap m'] = [p1_overlap_distance, p2_overlap_distance, difference, difference_percent]
+        #print(infos_df)
+
+        return f'Curve is {turn_name}, session is {self.name} in {self.location} and partial lap comparison info is: {infos_df}'
