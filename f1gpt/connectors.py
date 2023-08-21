@@ -3,6 +3,9 @@ import datetime
 import pandas
 import fastf1
 
+# For details of the schema of telemetries atribute from 
+# F1Sesseion class check schema.md file
+
 class DriversAttribute:
     '''Class to store the drivers data
     Attributes:
@@ -89,6 +92,7 @@ class F1Session(F1Event):
         self.drivers = drivers
         self.session = self.event.get_session(self.session_number)
         self.session.load()
+
     def fastests_lap(self):
         self.fastest_lap = pandas.DataFrame(columns=['Driver', 'Fastest Lap'])
 
@@ -105,8 +109,10 @@ class F1Session(F1Event):
 
     def get_top_2(self):
         self.top_2 = self.fastest_lap.index[:2]
+
     def set_top_2(self, top_2: list[str]):
         self.top_2 = top_2
+
     def get_telemetries(self):
         self.telemetries =[]
         for car in self.top_2:
@@ -117,6 +123,7 @@ class F1Session(F1Event):
             telemetry = pos.merge_channels(car_data)
             telemetry = telemetry.add_distance()
             self.telemetries.append(telemetry)
+            
     def get_data(self, cars: list[str] | None = None) -> list[pandas.DataFrame]:
         if cars:
             self.set_top_2(cars)
