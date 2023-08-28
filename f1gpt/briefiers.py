@@ -100,14 +100,10 @@ class SessionBriefer:
             info_dict: dictionary with the following keys:
                 name: name of the session
                 location: location of the session
-                top_3_names: names of the drivers in the top 3
+                results: results table
                 fastest_lap_time: time of the fastest lap
                 fastest_lap_name: name of the driver with the fastest lap
-                others_name: names of the drivers in the 4th to 20th position
                 '''
-        top_3 = self.results['DriverNumber'].index[:3]
-        top_3_names = ', '.join([self.drivers[i]['name'] for i in top_3])
-        others_name = ', '.join([self.drivers[i]['name'] for i in self.results['DriverNumber'].index[3:]])
         
         fastest_lap_number = self.fastest_lap.index[0]
         fastest_lap_name = self.drivers[fastest_lap_number]["name"]
@@ -115,10 +111,9 @@ class SessionBriefer:
 
         info_dict = {   'name': self.name,
                         'location': self.location,
-                        'top_3_names': top_3_names,
+                        'results': self.results,
                         'fastest_lap_time': fastest_lap_time,
-                        'fastest_lap_name':fastest_lap_name,
-                        'others_name': others_name,}
+                        'fastest_lap_name':fastest_lap_name}
         return info_dict 
 
     def create_range_briefing(self, 
