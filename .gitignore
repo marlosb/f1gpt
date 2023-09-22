@@ -5,3 +5,4 @@ f1gpt/__pycache__
 .vscode/
 *.png
 .venv/
+secrets/
